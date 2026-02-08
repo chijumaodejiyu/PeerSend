@@ -290,17 +290,7 @@ impl EasyTierDaemon {
 
         // 尝试通过 RPC 获取网络状态
         let rpc_url = format!("tcp://{}", rpc_portal);
-        let tcp_connector = match TcpTunnelConnector::new(rpc_url.parse().unwrap()) {
-            Ok(c) => c,
-            Err(_) => {
-                return DaemonStatus {
-                    running: true,
-                    pid: self.read_pid(),
-                    peer_count: 0,
-                    network_name: "".to_string(),
-                };
-            }
-        };
+        let tcp_connector = TcpTunnelConnector::new(rpc_url.parse().unwrap());
 
         let mut client = StandAloneClient::new(tcp_connector);
 
@@ -335,38 +325,38 @@ impl EasyTierDaemon {
         };
 
         // 尝试获取节点信息以获取网络名称
-        let network_name = match client
+        let mut network_name = String::new();
+        if let Ok(mut peer_client) = client
             .scoped_client::<PeerManageRpcClientFactory<BaseController>>("".to_string())
             .await
         {
-            Ok(mut peer_client) => {
-                let node_request = easytier::proto::api::instance::ShowNodeInfoRequest {
-                    instance: Some(InstanceIdentifier {
-                        selector: Some(
-                            easytier::proto::api::instance::instance_identifier::Selector::Id(
-                                easytier::proto::common::Uuid {
-                                    part1: 0,
-                                    part2: 0,
-                                    part3: 0,
-                                    part4: 0,
-                                },
-                            ),
+            let node_request = easytier::proto::api::instance::ShowNodeInfoRequest {
+                instance: Some(InstanceIdentifier {
+                    selector: Some(
+                        easytier::proto::api::instance::instance_identifier::Selector::Id(
+                            easytier::proto::common::Uuid {
+                                part1: 0,
+                                part2: 0,
+                                part3: 0,
+                                part4: 0,
+                            },
                         ),
-                    }),
-                };
-                match peer_client
-                    .show_node_info(BaseController::default(), node_request)
-                    .await
-                {
-                    Ok(response) => response
-                        .node_info
-                        .and_then(|n| n.network_name)
-                        .unwrap_or_default(),
-                    Err(_) => "".to_string(),
+                    ),
+                }),
+            };
+            if let Ok(response) = peer_client
+                .show_node_info(BaseController::default(), node_request)
+                .await
+            {
+                if let Some(n) = response.node_info {
+                    if !n.hostname.is_empty() {
+                        network_name = n.hostname;
+                    } else if !n.ipv4_addr.is_empty() {
+                        network_name = n.ipv4_addr;
+                    }
                 }
             }
-            Err(_) => "".to_string(),
-        };
+        }
 
         DaemonStatus {
             running: true,
@@ -467,13 +457,7 @@ async fn discover_peers() -> Result<Vec<serde_json::Value>, String> {
 
     // 创建 RPC 客户端 - 使用 URL 格式
     let rpc_url = format!("tcp://{}", rpc_portal);
-    let tcp_connector = match TcpTunnelConnector::new(rpc_url.parse().unwrap()) {
-        Ok(c) => c,
-        Err(e) => {
-            println!("创建 TCP 连接器失败: {}", e);
-            return Ok(vec![]);
-        }
-    };
+    let tcp_connector = TcpTunnelConnector::new(rpc_url.parse().unwrap());
     let mut client = StandAloneClient::new(tcp_connector);
 
     // 获取对等点列表 - 使用空字符串作为默认实例 ID
