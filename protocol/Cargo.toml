@@ -1,0 +1,39 @@
+[package]
+name = "peersend-protocol"
+description = "PeerSend file transfer protocol"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+# Async runtime
+tokio = { workspace = true, features = ["full"] }
+tokio-stream = "0.1"
+async-trait = { workspace = true }
+futures = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+# Serialization
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+# Network
+url = { workspace = true }
+bytes = { workspace = true }
+
+# File transfer
+sha2 = "0.10"
+aes-gcm = "0.10"
+hmac = "0.12"
+base64 = "0.22"
+uuid = { version = "1.5", features = ["v4", "fast-rng", "serde"] }
+
+# Chunked reading
+derive_builder = "0.20"
+
+[dev-dependencies]
+tempfile = "3.22"

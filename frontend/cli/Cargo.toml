@@ -1,0 +1,42 @@
+[package]
+name = "peersend-cli"
+description = "PeerSend CLI"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+path = "src/main.rs"
+name = "peersend"
+
+[dependencies]
+# Async runtime
+tokio = { workspace = true, features = ["full"] }
+
+# Protocol
+peersend-protocol = { path = "../../protocol" }
+
+# EasyTier core
+easytier = { path = "../../easytier-core" }
+
+# CLI
+clap = { version = "4.5", features = ["derive"] }
+tabled = "0.16"
+humansize = "2.1"
+terminal_size = "0.4"
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+anyhow = { workspace = true }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+cidr = "0.3"
+dashmap = "6"
+unicode-width = "0.1"
+chrono = "0.4"
+uuid = { version = "1.5", features = ["v4", "fast-rng"] }
+
+# Windows 服务管理
+[target.'cfg(windows)'.dependencies]
+windows = "0.52"
+windows-service = "0.7"
+winreg = "0.52"
