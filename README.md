@@ -1,6 +1,7 @@
 # PeerSend
 
 基于 EasyTier P2P VPN 的文件传输应用，支持跨网络的文件共享。
+本项目使用大量AI Code
 
 ## 功能特性
 
