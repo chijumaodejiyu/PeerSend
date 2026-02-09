@@ -17,6 +17,9 @@ futures = { workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 
+# HTTP
+reqwest = { version = "0.11", features = ["json"] }
+
 # Serialization
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -31,6 +34,9 @@ aes-gcm = "0.10"
 hmac = "0.12"
 base64 = "0.22"
 uuid = { version = "1.5", features = ["v4", "fast-rng", "serde"] }
+hostname = "0.3"
+rand = "0.8"
+zeroize = "1.7"
 
 # Chunked reading
 derive_builder = "0.20"

@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "identifier": "com.peersend.app",
   "build": {
-    "beforeDevCommand": "",
+    "beforeDevCommand": "cd ui && npm run dev",
     "devUrl": "http://localhost:1420",
-    "frontendDist": "../ui/dist"
+    "frontendDist": "ui/dist"
   },
   "app": {
     "windows": [
@@ -20,7 +20,19 @@
     ]
   },
   "bundle": {
-    "active": false,
-    "targets": "all"
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/icon-256x256.png",
+      "icons/icon-128x128.png",
+      "icons/icon-64x64.png",
+      "icons/icon-32x32.png",
+      "icons/icon-16x16.png"
+    ]
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
   }
 }
